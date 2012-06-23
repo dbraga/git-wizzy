@@ -10,8 +10,11 @@ Why i need wizzy?
 
 I got bored each time i had commit "fake" configuration files to the git repository such as *.yml configuration files
 in a rails project.
+
 I want to be able to restore this files from the fake ones and i want to do it without being forced to merge them.
+
 I want to be able to do it quickly in a snap
+
 That's why I need wizzy, maybe you do it too 
 
 Requirements
@@ -45,7 +48,7 @@ First time you use wizzy you should : ``wizzy install`` and ``wizzy ignore`` so 
 
 From now on each time you need to restore the files just type ``wizzy fix`` and you are done. Like magic
 
-If you want to clean the wizzy cache you can type ``wizzy clean``. After that you'll need to ``wizzy install`` agin.
+If you want to clean the wizzy cache you can type ``wizzy clean``. After that you'll need to ``wizzy install`` again.
 
 If you don't remember a spell just type ``wizzy help``
 
