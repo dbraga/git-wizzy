@@ -24,7 +24,7 @@ Installation
 ============
 
 Copy the wizzy file and the .wizzy-config in the main folder you want to do the magic.
-Add this alias to `your .bashrc configuration file::
+Add this alias to your ``.bashrc configuration`` file::
 
     ...
 	# WIZZY
