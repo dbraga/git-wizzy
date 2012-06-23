@@ -1,0 +1,167 @@
+#! /usr/bin/env python
+import sys,os, errno,glob,shutil
+from random import choice
+
+
+program_name = "wizzy"
+program_directory = "." + program_name
+config_directory = "config"
+config_filename=".wizzy-config"
+script_name=program_name+".py"
+command_names = ['install','fix','clear','ignore','help']
+
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    PURPLE = '\033[35m'
+    WARNING = '\033[93m'
+    CYAN = '\033[36m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+
+    def disable(self):
+        self.HEADER = ''
+        self.OKBLUE = ''
+        self.OKGREEN = ''
+        self.WARNING = ''
+        self.FAIL = ''
+        self.ENDC = ''
+
+def getRandomMagicWord():
+	words = [
+		"Aajaye",
+		"Abracadabra",
+		"Alla Peanut Butter Sandwiches",
+		"Alakazam",
+		"Cei",
+		"Hocus pocus",
+		"Joshikazam",
+		"Klaatu barada nikto",
+		"Meeska, Mooska, Mickey Mouse",
+		"Open sesame",
+		"Hey Presto",
+		"Sim Sala Bim",
+		"Shazam",
+		"Izzy wizzy",
+		"Wella Walla Washington",
+		"Mecca lecca hi, mecca hiney ho"]
+	return choice(words)
+
+def getStartMessage():
+	return bcolors.OKBLUE + "Wizzy:"+ getRandomMagicWord().title() +"! "+ bcolors.ENDC 
+
+def getFailMessage(msg):
+	return bcolors.FAIL + msg + bcolors.ENDC 
+
+def getInfoMessage(msg):
+	return bcolors.CYAN + msg + bcolors.ENDC 
+
+def getMagicMessage(msg):
+	return bcolors.OKGREEN + msg + " !!"+ bcolors.ENDC 
+
+def help():
+	print """
+ """ + getInfoMessage("usage: "+ program_name + " <spell>" ) + """
+
+Shhhh! Here you can find the list of the spells :
+
+   """+getInfoMessage(command_names[0])+"""        Install wizzy and caches all files specified in the """+config_filename+"""
+   """+getInfoMessage(command_names[1])+"""            Restores the cached files .. like .. magic ! 
+   """+getInfoMessage(command_names[2])+"""          Empties the wizzy cache. You need to reinstall after
+   """+getInfoMessage(command_names[3])+"""         Add the wizzy files to .gitignore
+   """+getInfoMessage(command_names[4])+"""           Every magician needs help at first     
+  """
+
+
+def getListOfFilesToCache():
+	#from .wizzy-config
+	l = list()
+	f = open(config_filename, 'r')
+	for line in f:
+	    l.append(line.rstrip('\r\n'))
+	return l
+
+def isModified(f):
+	if not os.path.exists(os.path.abspath(f)) :
+		# file removed?
+		return True
+	if os.stat(f).st_mtime == os.stat(os.path.abspath(program_directory)+"/"+os.path.basename(f)).st_mtime :
+		return False
+	else :
+		return True
+
+def ignore():
+	# Adding files to .gitignore
+	if not "."+program_name in open(".gitignore").read():
+		# must add to .gitignore
+		f = open(".gitignore",'a')
+		f.write(str("#  Ignore "+program_name+" configuration \n"))
+		f.write(str("."+program_name+"\n"))
+		f.write(str(script_name+"\n"))
+		f.write(str(config_filename+"\n"))
+	else :
+		# already added
+		pass
+	print getStartMessage() + getInfoMessage(" .. and only wizards can see "+program_name+ " files now! ")
+def install():
+	print getStartMessage()+ getInfoMessage("Making "+program_name+ " directory..")
+	# Create wizzy cache directory
+	try:
+	    os.makedirs(program_directory)
+	except OSError, e:
+	    if e.errno != errno.EEXIST:
+	    	# If is not a already exists error
+		    raise
+  
+    # Fill wizzy dir with files specified in .wizzy-config
+	print getStartMessage()
+	for element in  getListOfFilesToCache():
+		for files in glob.glob(os.path.abspath(element)):
+			print getInfoMessage("	Caching "+files+ " ..")
+			shutil.copy2(files, os.path.abspath(program_directory))
+
+
+
+def fix():
+	if os.listdir(program_directory):
+		print getStartMessage()
+		for element in  getListOfFilesToCache():
+			for files in glob.glob(os.path.abspath(element)):
+				# if the file is modified since last magic, copy the cached version
+				if isModified(files) :
+					if os.path.exists(files):
+						# Override file
+						os.remove(files)
+					shutil.copy2(program_directory+"/"+os.path.basename(files), os.path.dirname(files))
+					print getInfoMessage("	"+files+"? ")+getMagicMessage(getRandomMagicWord())
+				else :
+					print getInfoMessage("	"+files+"? ")+getFailMessage("No magic needed here..") 
+
+	else:
+		print getStartMessage()+ getFailMessage("No cache found ! Have you tried to install "+ program_name + "?!\n Try with '" + program_name + " install'. ")
+
+def clear():
+	try:
+		for files in os.listdir(program_directory):
+			os.remove(os.path.abspath(program_directory +"/"+files))
+		print getStartMessage()+getInfoMessage(" All "+program_name+" files? PUFF..") 
+	except OSError, e:
+		print getStartMessage()+getFailMessage(" Oh snap! My magic wand is probably broken .. ") 
+		raise
+
+def exec_arg(argv):
+	if len(argv) == 2:
+		# check if the command is supported
+		if not argv[1] in command_names:
+			# not supported
+			print getStartMessage()+ getFailMessage("You're using the wrong spell.. See '" + program_name + " help'. ") 
+		else:
+			# calling the command
+			globals()[argv[1]]()
+	else :
+		# wrong arguments man
+		print getStartMessage()+ getFailMessage("You're using the wrong spell.. See '" + program_name + " help'. ")
+
+exec_arg(sys.argv)
