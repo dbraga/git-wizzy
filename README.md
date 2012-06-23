@@ -1,7 +1,5 @@
-git-wizzy
+Git-Wizzy
 =========
-
-.. contents:: **Table of contents**
 
 Overview
 ========
