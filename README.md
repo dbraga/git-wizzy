@@ -32,7 +32,7 @@ Add this alias to `your .bashrc configuration file::
 
 and don't forget to re-open the terminal or to do a  ``source ~/.bashrc``
 
-Open your .wizzy-config and type in the files you want to be magic.. check out this example::
+Open your .wizzy-config and type in the files you want to be magic.. check out this example file::
     ...
 	foo_dir/*.yml
 	foo_dir/foo.rb
