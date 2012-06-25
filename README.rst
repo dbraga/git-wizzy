@@ -30,7 +30,6 @@ Copy the wizzy file and the .wizzy-config in the main folder you want to do the 
 Add this alias to your ``.bashrc`` configuration file: ``echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc``
 
 
-
 Open your .wizzy-config and type in the files you want to be magic.. check out this .wizzy-config example file::
 
     ...
