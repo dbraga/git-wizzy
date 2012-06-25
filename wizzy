@@ -10,7 +10,6 @@ config_filename=".wizzy-config"
 script_name=program_name
 command_names = ['install','fix','clear','ignore','help']
 
-
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
