@@ -138,7 +138,7 @@ def fix():
 					print getInfoMessage("	"+files+"? ")+getMagicMessage(getRandomMagicWord())
 				else :
 					print getInfoMessage("	"+files+"? ")+getFailMessage("No magic needed here..") 
-
+		install()		
 	else:
 		print getStartMessage()+ getFailMessage("No cache found ! Have you tried to install "+ program_name + "?!\n Try with '" + program_name + " install'. ")
 
