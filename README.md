@@ -27,13 +27,9 @@ Installation
 ============
 
 Copy the wizzy file and the .wizzy-config in the main folder you want to do the magic.
-Add this alias to your ``.bashrc`` configuration file::
+Add this alias to your ``.bashrc`` configuration file: ``echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc``
 
-    ...
-	# WIZZY
-	alias wizzy='./wizzy '
 
-and don't forget to re-open the terminal or to do a  ``source ~/.bashrc``
 
 Open your .wizzy-config and type in the files you want to be magic.. check out this .wizzy-config example file::
 
