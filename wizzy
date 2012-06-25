@@ -7,7 +7,7 @@ program_name = "wizzy"
 program_directory = "." + program_name
 config_directory = "config"
 config_filename=".wizzy-config"
-script_name=program_name+".py"
+script_name=program_name
 command_names = ['install','fix','clear','ignore','help']
 
 
