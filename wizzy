@@ -118,11 +118,12 @@ def install():
     # Fill wizzy dir with files specified in .wizzy-config
 	print getStartMessage()
 	for element in  getListOfFilesToCache():
+		if  not glob.glob(os.path.abspath(element)):
+			#The file(s) are in the .wizzy-config but not on the os !
+			print getStartMessage()+getFailMessage(" Oh snap! Someone made "+element+" disappear! Can you check the "+config_filename+" for missing files?")
 		for files in glob.glob(os.path.abspath(element)):
 			print getInfoMessage("	Caching "+files+ " ..")
 			shutil.copy2(files, os.path.abspath(program_directory))
-
-
 
 def fix():
 	if os.listdir(program_directory):
