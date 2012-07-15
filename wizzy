@@ -1,8 +1,11 @@
 #! /usr/bin/env python
-import sys,os, errno,glob,shutil
+import sys
+import os 
+import errno
+import glob
+import shutil
 from random import choice
-import subprocess
-import re
+
 
 
 program_name = "wizzy"
@@ -10,44 +13,7 @@ program_directory = "." + program_name
 config_directory = "config"
 config_filename=".wizzy-config"
 script_name=program_name
-command_names = ['install','fix','clear','ignore','help', 'track', 'untrack' ,'example']
-
-words_with_semicolumn =	{
-	'username': 'username_example',
-	'password': 'password_example', 
-	'host':	'host.example.net',
-	'zmi_http_username': 'username',
-	'zmi_http_password': 'password',
-	'zmi_server_address': 'server.example.net',
-	'zmi_server_port': '1234',
-	'home_pages_index_location': '/path/to/hp/index',
-	'home_pages_root_url': "http://teacher.example.net/",
-	'click_to_dial_root_url': "http://voip.example.net/click2dial/",
-	'images_root_url': "http://example.net/pictures",
-	'myphone_edit_photo_address': "http://www.myphone.example.net/?a=0",
-	'myphone_address': "http://myphone.example.net/",
-	'receipt_pages_path': "/ricevimento",
-	'contacts_url': "http://www.example.com/path/to/contacts",
-	'search_url': "http://www.example.com/search",
-	'mydesk_url': "http://www.example.com/mydesk",
-	'helpdesk_email': "helpdesk@example.com",
-	'google_maps_link': "http://maps.google.it/maps?f=q&source=s_q&hl=it&geocode=",
-	'privacy_link': "http://www.example.com/office/privacy",
-	'urp_email': "urp@example.com",
-	'urp_url': "http://www.example.com/contact",
-	'pec_email': "ateneo@pec.example.com",
-	'pec_url': "http://www.example.com/pec",
-	':subject': "Subject Example",
-	':from': "example@example.it",
-	':settings': 'example',
-	':smtp_address': 'smtp.unife.it',
-	':smtp_port': '25'
-  }
-
-words_with_equal_sign = {
-	'host' : 'example.example.it'
-}
-
+command_names = ['install','fix','clear','ignore','help', 'track', 'untrack']
 
 class bcolors:
     HEADER = '\033[95m'
@@ -110,6 +76,8 @@ Shhhh! Here you can find the list of the spells :
    """+getInfoMessage(command_names[2])+"""          Empties the wizzy cache. You need to reinstall after
    """+getInfoMessage(command_names[3])+"""         Add the wizzy files to .gitignore
    """+getInfoMessage(command_names[4])+"""           Every magician needs help at first     
+   """+getInfoMessage(command_names[5])+"""           Set all the files in a no-assume-unchanged state
+   """+getInfoMessage(command_names[6])+"""           Set all the files in a assume-unchanged state   
   """
 
 
@@ -215,34 +183,6 @@ def track():
 				if out != '':
 					sys.stdout.write(out)
 					sys.stdout.flush()
-
-def example():
-	for element in  getListOfFilesToCache():
-		for files in glob.glob(os.path.abspath(element)):
-			f = open(files, 'r')
-			originalstring = f.read()
-			f.close()
-			f = open(files, 'w')
-			for word in words_with_semicolumn:
-				# try with : and =
-				regex = re.compile(word +": [\w.]*")
-				originalstring = regex.sub(word + ": "+words_with_semicolumn[word], originalstring)
-			f.write(originalstring)
-			f.close()
-	for element in  getListOfFilesToCache():
-		for files in glob.glob(os.path.abspath(element)):
-			f = open(files, 'r')
-			originalstring = f.read()
-			f.close()
-			f = open(files, 'w')
-			for word in words_with_equal_sign:
-				# try with : and =
-				regex = re.compile(word +" = [a-zA-Z0-9\-\.]*")
-				originalstring = regex.sub(word + " = "+words_with_equal_sign[word], originalstring)
-			f.write(originalstring)
-			f.close()
-
-
 
 def exec_arg(argv):
 	if len(argv) == 2:
