@@ -1,3 +1,89 @@
-# How does it work?
+# Git-Wizzy
+ 
+## Overview
 
-Enter Text in Markdown format.
+`Git-Wizzy` or `Wizzy` for friends is a simple utility that can restores files from an internal cache.
+
+### Scenario
+
+Imagine you are working in a team on a project and you are using git.
+You have a bunch of configuration files you have to commit but in a `fake` state.
+See this example related to [ruby on rails](https://github.com/rails/rails) :
+
+```ruby
+  my_important_project: &my_important_project
+    adapter: mysql2
+    encoding: utf8
+    reconnect: false
+    pool: 5
+    username: i_dont_want_to_tell_you_my_username
+    password: and_neither_my_password
+    socket: /var/run/mysqld/mysqld.sock
+```
+.. and then you have your local copy with 'real' values.
+Each time you commit/pull to this repo you have to stash or checkout your real files and merging is painful!
+
+### Solution
+
+```bash
+  wizzy fix
+```
+Yep. It's simple
+
+## Requirements
+
+- Git
+- Python [better if >= 2.6 ]
+- You must be a wizard 
+ 
+## Installation
+
+1. Clone the repository
+
+2. Copy `wizzy` and `.wizzy-config`in your project folder
+
+3. Add this alias to your `.bashrc` config file:
+
+```bash
+  echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc
+```
+4. Open your `.wizzy-config` file and tell him what are the files you want to be magic. Check out this example 
+
+```bash
+  ...
+  foo_dir/*.yml
+  foo_dir/foo.rb
+```
+## Usage
+
+### First Time
+
+- You should add all the wizzy files to the .gitignore
+	`wizzy ignore`
+    
+- Install wizzy
+	`wizzy install`
+
+### All the times
+
+- Each time you need to restore files just type 
+`wizzy fix`
+
+- If you want to clean the cache just type
+`wizzy clean` and after a `wizzy install`
+
+- Do you want to track/untrack your restored files ?
+`wizzy track` or `wizzy untrack`
+
+- Don't remember a spell?
+`wizzy help`
+
+## Support
+
+- Bugs? Issues? use the [system tracker](https://github.com/dbraga/git-wizzy/issues) 
+- Suggestions? [email me](mailto:damiano.braga@gmail.com)
+- [Fork](https://github.com/dbraga/git-wizzy/fork) it, make it better and send me a pull request!
+ 
+## Author
+ 
+This product was developed by [*Damiano Braga*](https://github.com/dbraga).
