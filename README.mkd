@@ -38,16 +38,23 @@ Yep. It's simple
  
 ## Installation
 
-1. Clone the repository
+- Clone the repository
 
-2. Copy `wizzy` and `.wizzy-config`in your project folder
+- Make wizzy executable
 
-3. Add this alias to your `.bashrc` config file:
+```bash
+  chmod +x wizzy
+```
+
+- Copy `wizzy` and `.wizzy-config`in your project folder
+
+- Add this alias to your `.bashrc` config file:
 
 ```bash
   echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc
 ```
-4. Open your `.wizzy-config` file and tell him what are the files you want to be magic. Check out this example 
+
+- Open your `.wizzy-config` file and tell him what are the files you want to be magic. Check out this example 
 
 ```bash
   ...
@@ -59,10 +66,10 @@ Yep. It's simple
 ### First Time
 
 - You should add all the wizzy files to the .gitignore
-	`wizzy ignore`
+  `wizzy ignore`
     
 - Install wizzy
-	`wizzy install`
+  `wizzy install`
 
 ### All the times
 
