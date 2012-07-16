@@ -160,31 +160,27 @@ def clear():
 		print getStartMessage()+getFailMessage(" Oh snap! My magic wand is probably broken .. ") 
 		raise
 
+def execute_process(command):
+	child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
+	while True:
+		out = child.stderr.read(1)
+		if out == '' and child.poll() != None:
+			break
+		if out != '':
+			sys.stdout.write(out)
+			sys.stdout.flush()
+
 def untrack():
 	for element in  getListOfFilesToCache():
 		for files in glob.glob(os.path.abspath(element)):
-			command = 'git update-index --assume-unchanged ' + files
-			child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
-			while True:
-				out = child.stderr.read(1)
-				if out == '' and child.poll() != None:
-					break
-				if out != '':
-					sys.stdout.write(out)
-					sys.stdout.flush()
+			execute_process('git update-index --assume-unchanged ' + files)
+			print getInfoMessage("	"+files+"? ")+ getMagicMessage("Oh snap! My alzhaimer!" )
 
 def track():
 	for element in  getListOfFilesToCache():
 		for files in glob.glob(os.path.abspath(element)):
-			command = 'git update-index --no-assume-unchanged ' + files
-			child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
-			while True:
-				out = child.stderr.read(1)
-				if out == '' and child.poll() != None:
-					break
-				if out != '':
-					sys.stdout.write(out)
-					sys.stdout.flush()
+			execute_process('git update-index --no-assume-unchanged ' + files)
+			print getInfoMessage("	"+files+"? ")+  getMagicMessage("Oh now i remember")
 
 def exec_arg(argv):
 	if len(argv) == 2:
