@@ -73,13 +73,13 @@ def help():
 
 Shhhh! Here you can find the list of the spells :
 
-   """+getInfoMessage(command_names[0])+"""        Install wizzy and caches all files specified in the """+config_filename+"""
-   """+getInfoMessage(command_names[1])+"""            Restores the cached files .. like .. magic ! 
-   """+getInfoMessage(command_names[2])+"""          Empties the wizzy cache. You need to reinstall after
-   """+getInfoMessage(command_names[3])+"""         Add the wizzy files to .gitignore
-   """+getInfoMessage(command_names[4])+"""           Every magician needs help at first     
-   """+getInfoMessage(command_names[5])+"""           Set all the files in a no-assume-unchanged state
-   """+getInfoMessage(command_names[6])+"""           Set all the files in a assume-unchanged state   
+   """+getInfoMessage(command_names[0]).ljust(20)+"""Install wizzy and caches all files specified in the """+config_filename+"""
+   """+getInfoMessage(command_names[1]).ljust(20)+"""Restores the cached files .. like .. magic ! 
+   """+getInfoMessage(command_names[2]).ljust(20)+"""Empties the wizzy cache. You need to reinstall after
+   """+getInfoMessage(command_names[3]).ljust(20)+"""Add the wizzy files to .gitignore
+   """+getInfoMessage(command_names[4]).ljust(20)+"""Every magician needs help at first     
+   """+getInfoMessage(command_names[5]).ljust(20)+"""Set all the files in a no-assume-unchanged state
+   """+getInfoMessage(command_names[6]).ljust(20)+"""Set all the files in a assume-unchanged state   
   """
 
 
