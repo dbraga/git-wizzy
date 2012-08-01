@@ -173,7 +173,7 @@ def untrack():
 	for element in  getListOfFilesToCache():
 		for files in glob.glob(os.path.abspath(element)):
 			execute_process('git update-index --assume-unchanged ' + files)
-			print getInfoMessage("	"+files+"? ")+ getMagicMessage("Oh snap! My alzhaimer!" )
+			print getInfoMessage("	"+files+"? ")+ getMagicMessage("Oh snap! My alzheimer!" )
 
 def track():
 	for element in  getListOfFilesToCache():
