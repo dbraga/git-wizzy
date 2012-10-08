@@ -1,0 +1,2 @@
+files: [config/*.yml, config/initializers/secret_token.rb]
+fuzzy_configuration: true

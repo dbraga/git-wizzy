@@ -1,0 +1,3 @@
+files: [config/*.yml, config/initializers/secret_token.rb, test]
+wizzy_directory: .
+wizzy_remote: false
