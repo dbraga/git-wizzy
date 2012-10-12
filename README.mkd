@@ -32,11 +32,16 @@ Yep. It's simple
 
 ## Requirements
 
+- Clint[https://github.com/kennethreitz/clint] and PyYaml [http://pyyaml.org/]
 - Git
 - Python [better if >= 2.6 ]
 - You must be a wizard 
  
 ## Installation
+
+- pip install pyyaml
+
+- pip install clint
 
 - Clone the repository
 
@@ -46,7 +51,7 @@ Yep. It's simple
   chmod +x wizzy
 ```
 
-- Copy `wizzy` and `.wizzy-config`in your project folder
+- Copy `wizzy` and `wizzy_config.yml`in your project folder
 
 - Add this alias to your `.bashrc` config file:
 
@@ -54,12 +59,14 @@ Yep. It's simple
   echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc
 ```
 
-- Open your `.wizzy-config` file and tell him what are the files you want to be magic. Check out this example 
+- Open your `wizzy_config.yml` file and tell him what are the files you want to be magic. Check out this example 
 
-```bash
+```yml
   ...
-  foo_dir/*.yml
-  foo_dir/foo.rb
+  files: [config/*.yml, config/initializers/secret_token.rb]
+  wizzy_cache_directory: .wizzy
+  wizzy_directory: .
+  wizzy_remote: false
 ```
 ## Usage
 
