@@ -32,7 +32,7 @@ Yep. It's simple
 
 ## Requirements
 
-- Clint[https://github.com/kennethreitz/clint] and PyYaml [http://pyyaml.org/]
+- [Clint](https://github.com/kennethreitz/clint) and [PyYaml](http://pyyaml.org/)
 - Git
 - Python [better if >= 2.6 ]
 - You must be a wizard 
