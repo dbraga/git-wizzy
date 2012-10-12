@@ -39,9 +39,16 @@ Yep. It's simple
  
 ## Installation
 
-- pip install pyyaml
+- Install pyyaml
 
-- pip install clint
+```bash
+  pip install pyyaml
+```
+- Install clint
+
+```bash
+  pip install clint
+```
 
 - Clone the repository
 
