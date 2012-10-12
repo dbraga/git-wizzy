@@ -1,4 +1,3 @@
 .wizzy
-wizzy.py
-.wiz-config
+wizzy_config.yml
 .DS_Store

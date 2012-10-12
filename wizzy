@@ -1,41 +1,23 @@
-#! /usr/bin/env python
-import sys
-import os 
-import errno
-import glob
-import shutil
-import subprocess
+#!/usr/bin/env python
+
+import yaml,sys,glob,os,shutil,errno,subprocess
 from random import choice
+from clint.textui import colored
 
+command_names = ['list', 'add', 'check','install','fix', 'doctor', 'remove','track','untrack','help']
 
+def isACommand(command):
+ return command in command_names
 
+def configurationFile():
+	try:
+		stream = open("wizzy_config.yml", 'r')
+		configuration_file = yaml.load(stream)
+		return configuration_file
+	except IOError:
+		print "File wizzy_config.yml not found!"
 
-program_name = "wizzy"
-program_directory = "." + program_name
-config_directory = "config"
-config_filename=".wizzy-config"
-script_name=program_name
-command_names = ['install','fix','clear','ignore','help', 'track', 'untrack']
-
-class bcolors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKGREEN = '\033[92m'
-    PURPLE = '\033[35m'
-    WARNING = '\033[93m'
-    CYAN = '\033[36m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-
-    def disable(self):
-        self.HEADER = ''
-        self.OKBLUE = ''
-        self.OKGREEN = ''
-        self.WARNING = ''
-        self.FAIL = ''
-        self.ENDC = ''
-
-def getRandomMagicWord():
+def randomMagicWord():
 	words = [
 		"Aajaye",
 		"Abracadabra",
@@ -55,109 +37,142 @@ def getRandomMagicWord():
 		"Mecca lecca hi, mecca hiney ho"]
 	return choice(words)
 
-def getStartMessage():
-	return bcolors.OKBLUE + "Wizzy:"+ getRandomMagicWord().title() +"! "+ bcolors.ENDC 
+def wizzySpeak(phrase, action=""):
+	print colored.blue("Wizzy: ") + colored.cyan(action)+ colored.yellow(phrase) + colored.cyan(" ...")
+def wizzyCast():
+	print colored.blue(" *^~.. ") + colored.green(randomMagicWord()+"!") + colored.blue(" ..~^* ")
+def wizzyCastAndSpeak(phrase):
+	print colored.blue("Wizzy: ") + colored.blue(" *^~.. ") + colored.green(randomMagicWord()+"!") + colored.blue(" ..~^* ") + colored.yellow(phrase)
+def wizzyCastAndSpeakError(element, phrase):
+	print colored.red("Wizzy: ") + colored.blue(" *^~.. ") + colored.green(randomMagicWord()+"!") + colored.blue(" ..~^* ") + colored.red(element) + colored.yellow(phrase)
 
-def getFailMessage(msg):
-	return bcolors.FAIL + msg + bcolors.ENDC 
+# ---------------------------------------------------
+# Configuration file actions 
 
-def getInfoMessage(msg):
-	return bcolors.CYAN + msg + bcolors.ENDC 
+def check():
+	wizzySpeak("Let me see.. i should have a check spell somewhere...")
+	wizzyCast()
+	wizzySpeak("Checking files inside wizzy_config.yml")
+	errors = 0
+	for element in configurationFile()['files']:
+		if  not glob.glob(os.path.abspath(element)):
+			errors += 1
+			wizzyCastAndSpeakError(element, " not valid. Please use valid file name")
+	if errors > 0 :
+		if errors == 1:
+			wizzySpeak("You have "+str(errors) +" error. Please run wizzy doctor to fix it")
+		else:
+			wizzySpeak("You have "+str(errors) +" errors. Please run wizzy doctor to fix them")
 
-def getMagicMessage(msg):
-	return bcolors.OKGREEN + msg + " !!"+ bcolors.ENDC 
+def doctor():
+	wizzySpeak("Checking files inside wizzy_config.yml")
+	for element in configurationFile()['files']:
+		if  not glob.glob(os.path.abspath(element)):
+			remove(element)
+
+def list():
+	wizzySpeak("Coff Coff.. too much dust!")
+	for element in configurationFile()['files']:
+		if  not glob.glob(os.path.abspath(element)):
+			#The file(s) are in the wizzy_config but not on the os !
+			wizzyCastAndSpeakError(element, " does not exist. Check your wizzy_config file")
+		for file in glob.glob(os.path.abspath(element)):
+			print colored.green(file)
+
+def add(file):
+	if glob.glob(os.path.abspath(file)):
+		array = configurationFile()['files']
+		# TODO: Check for duplicates
+		array.append(file)
+		configurationFile()['files'].update({'files': array})
+		stream = open("wizzy_config.yml",'w')
+		yaml.dump(configurationFile()['files'],stream)
+		wizzySpeak("File " + file + " added to wizzy_config.yml")
+	else:
+		wizzyCastAndSpeakError(file, " does not making any sense. Please insert a valid file name or regex!")
+
+def remove(file):
+		array = configurationFile()['files']
+		try:
+			array.remove(file)
+			configurationFile()['files'].update({'files': array})
+			stream = open("wizzy_config.yml",'w')
+			yaml.dump(configurationFile()['files'],stream)
+			wizzySpeak("File " + file + " removed from wizzy_config.yml")
+		except ValueError,e :
+			wizzyCastAndSpeakError(file, " was not in the config file. I cannot remove what does not exist")
+
+# ---------------------------------------------------
+
+
+# ---------------------------------------------------
+# Basic operations
 
 def help():
-	print """
- """ + getInfoMessage("usage: "+ program_name + " <spell>" ) + """
+	span = 10
+	print colored.cyan("usage: wizzy <spell>")
+	print colored.yellow("Shhhh! Here you can find the list of the spells :")
+	print colored.red(command_names[0].ljust(span)) + colored.green("List all the files specified into the wizzy-config")
+	print colored.red(command_names[1].ljust(span)) + colored.green("Add a file to the wizzy-config")
+	print colored.red(command_names[2].ljust(span)) + colored.green("Check if wizzy-config contains errors")
+	print colored.red(command_names[3].ljust(span)) + colored.green("Install wizzy and caches all files specified in the wizzy-config")
+	print colored.red(command_names[4].ljust(span)) + colored.green("Restores the cached files .. like .. magic ! ")
+	print colored.red(command_names[5].ljust(span)) + colored.green("Fix the wizzy-config removing invalid files")
+	print colored.red(command_names[6].ljust(span)) + colored.green("Remove a file from the wizzy-config")
+	print colored.red(command_names[7].ljust(span)) + colored.green("Set all the files in a assume-unchanged state")
+	print colored.red(command_names[8].ljust(span)) + colored.green("Set all the files in a no-assume-unchanged state")
+	print colored.red(command_names[9].ljust(span)) + colored.green("Well.. that's me!")
 
-Shhhh! Here you can find the list of the spells :
-
-   """+getInfoMessage(command_names[0]).ljust(20)+"""Install wizzy and caches all files specified in the """+config_filename+"""
-   """+getInfoMessage(command_names[1]).ljust(20)+"""Restores the cached files .. like .. magic ! 
-   """+getInfoMessage(command_names[2]).ljust(20)+"""Empties the wizzy cache. You need to reinstall after
-   """+getInfoMessage(command_names[3]).ljust(20)+"""Add the wizzy files to .gitignore
-   """+getInfoMessage(command_names[4]).ljust(20)+"""Every magician needs help at first     
-   """+getInfoMessage(command_names[5]).ljust(20)+"""Set all the files in a no-assume-unchanged state
-   """+getInfoMessage(command_names[6]).ljust(20)+"""Set all the files in a assume-unchanged state   
-  """
-
-
-def getListOfFilesToCache():
-	#from .wizzy-config
-	l = list()
-	f = open(config_filename, 'r')
-	for line in f:
-	    l.append(line.rstrip('\r\n'))
-	return l
+def install():
+	wizzySpeak("Creating magic directory")
+	# Create wizzy cache directory
+	try:
+	    os.makedirs(configurationFile()['wizzy_cache_directory'])
+	except OSError, e:
+			if e.errno == errno.EEXIST:
+					wizzyCastAndSpeakError(configurationFile()['wizzy_cache_directory'], " directory was already created. Let's skip this ok?")
+			else:
+					# If is not an already exists error
+					raise
+ # Fill wizzy dir with files specified in .wizzy-config
+	for element in configurationFile()['files']:
+		if  not glob.glob(os.path.abspath(element)):
+			#The file(s) are in the .wizzy-config but not on the os !
+			wizzyCastAndSpeakError(element, " disappeared! Oh snap! Can you please run wizzy check to understand what is missing?")
+		for file in glob.glob(os.path.abspath(element)):
+			wizzySpeak(file,"Cached ")
+			shutil.copy2(file, os.path.abspath(configurationFile()['wizzy_cache_directory']))
 
 def isModified(f):
 	if not os.path.exists(os.path.abspath(f)) :
 		# file removed?
 		return True
-	if os.stat(f).st_mtime == os.stat(os.path.abspath(program_directory)+"/"+os.path.basename(f)).st_mtime :
+	if os.stat(f).st_mtime == os.stat(os.path.abspath(configurationFile()['wizzy_cache_directory'])+"/"+os.path.basename(f)).st_mtime :
 		return False
 	else :
 		return True
 
-def ignore():
-	# Adding files to .gitignore
-	if not "."+program_name in open(".gitignore").read():
-		# must add to .gitignore
-		f = open(".gitignore",'a')
-		f.write(str("#  Ignore "+program_name+" configuration \n"))
-		f.write(str("."+program_name+"\n"))
-		f.write(str(script_name+"\n"))
-		f.write(str(config_filename+"\n"))
-	else :
-		# already added
-		pass
-	print getStartMessage() + getInfoMessage(" .. and only wizards can see "+program_name+ " files now! ")
-def install():
-	print getStartMessage()+ getInfoMessage("Making "+program_name+ " directory..")
-	# Create wizzy cache directory
-	try:
-	    os.makedirs(program_directory)
-	except OSError, e:
-	    if e.errno != errno.EEXIST:
-	    	# If is not a already exists error
-		    raise
-  
-    # Fill wizzy dir with files specified in .wizzy-config
-	print getStartMessage()
-	for element in  getListOfFilesToCache():
-		if  not glob.glob(os.path.abspath(element)):
-			#The file(s) are in the .wizzy-config but not on the os !
-			print getStartMessage()+getFailMessage(" Oh snap! Someone made "+element+" disappear! Can you check the "+config_filename+" for missing files?")
-		for files in glob.glob(os.path.abspath(element)):
-			print getInfoMessage("	Caching "+files+ " ..")
-			shutil.copy2(files, os.path.abspath(program_directory))
-
 def fix():
-	if os.listdir(program_directory):
-		print getStartMessage()
-		for element in  getListOfFilesToCache():
-			for files in glob.glob(os.path.abspath(element)):
-				# if the file is modified since last magic, copy the cached version
-				if isModified(files) :
-					if os.path.exists(files):
-						# Override file
-						os.remove(files)
-					shutil.copy2(program_directory+"/"+os.path.basename(files), os.path.dirname(files))
-					print getInfoMessage("	"+files+"? ")+getMagicMessage(getRandomMagicWord())
-				else :
-					print getInfoMessage("	"+files+"? ")+getFailMessage("No magic needed here..") 	
+	if not glob.glob(os.path.abspath(configurationFile()['wizzy_cache_directory'])):
+		wizzyCastAndSpeakError(configurationFile()['wizzy_cache_directory'], " directory not found. Have you tried to wizzy install first?")
 	else:
-		print getStartMessage()+ getFailMessage("No cache found ! Have you tried to install "+ program_name + "?!\n Try with '" + program_name + " install'. ")
+		for element in  configurationFile()['files']:
+			for file in glob.glob(os.path.abspath(element)):
+				# if the file is modified since last magic, copy the cached version
+				if isModified(file) :
+					if os.path.exists(file):
+						# Override file
+						os.remove(file)
+					shutil.copy2(configurationFile()['wizzy_cache_directory']+"/"+os.path.basename(file), os.path.dirname(file))
+					wizzyCast()
+					wizzySpeak(file,"Restored ")
+				else :
+					wizzySpeak(file,"No magic needed for file: ")
 
-def clear():
-	try:
-		for files in os.listdir(program_directory):
-			os.remove(os.path.abspath(program_directory +"/"+files))
-		print getStartMessage()+getInfoMessage(" All "+program_name+" files? PUFF..") 
-	except OSError, e:
-		print getStartMessage()+getFailMessage(" Oh snap! My magic wand is probably broken .. ") 
-		raise
+# ---------------------------------------------------
+
+# ---------------------------------------------------
+# Git related operations
 
 def execute_process(command):
 	child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
@@ -169,29 +184,41 @@ def execute_process(command):
 			sys.stdout.write(out)
 			sys.stdout.flush()
 
+
 def untrack():
-	for element in  getListOfFilesToCache():
-		for files in glob.glob(os.path.abspath(element)):
-			execute_process('git update-index --assume-unchanged ' + files)
-			print getInfoMessage("	"+files+"? ")+ getMagicMessage("Oh snap! My alzheimer!" )
+	for element in configurationFile()['files']:
+		for file in glob.glob(os.path.abspath(element)):
+			execute_process('git update-index --assume-unchanged ' + file)
+			# print getInfoMessage("	"+file+"? ")+ getMagicMessage("Oh snap! My alzheimer!" )
+			wizzyCastAndSpeak(file+" ? Oh snap! My alzheimer!")
 
 def track():
-	for element in  getListOfFilesToCache():
-		for files in glob.glob(os.path.abspath(element)):
-			execute_process('git update-index --no-assume-unchanged ' + files)
-			print getInfoMessage("	"+files+"? ")+  getMagicMessage("Oh now i remember")
+	for element in configurationFile()['files']:
+		for file in glob.glob(os.path.abspath(element)):
+			execute_process('git update-index --no-assume-unchanged ' + file)
+			wizzyCastAndSpeak(file+" ? Oh now i remember!")
+
+# ---------------------------------------------------
+
 
 def exec_arg(argv):
 	if len(argv) == 2:
 		# check if the command is supported
 		if not argv[1] in command_names:
 			# not supported
-			print getStartMessage()+ getFailMessage("You're using the wrong spell.. See '" + program_name + " help'. ") 
+			wizzyCastAndSpeakError(argv, " wrong spell! What are you trying to say? Plase type wizzy help")
 		else:
 			# calling the command
+			# print argv
 			globals()[argv[1]]()
-	else :
+	elif len(argv) == 3 :
+		if not isACommand(argv[1]):
+				wizzyCastAndSpeakError(argv, " wrong spell! What are you trying to say? Plase type wizzy help")
+		else:
+			globals()[argv[1]](argv[2])
+	else:
 		# wrong arguments man
-		print getStartMessage()+ getFailMessage("You're using the wrong spell.. See '" + program_name + " help'. ")
+		wizzyCastAndSpeakError(argv, " wrong arguments! What are you trying to say? Plase type wizzy help")
 
 exec_arg(sys.argv)
+

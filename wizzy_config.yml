@@ -1,3 +1,4 @@
-files: [config/*.yml, config/initializers/secret_token.rb, test]
+files: [config/*.yml, config/initializers/secret_token.rb]
+wizzy_cache_directory: .wizzy
 wizzy_directory: .
 wizzy_remote: false
