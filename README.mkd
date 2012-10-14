@@ -52,19 +52,13 @@ Yep. It's simple
 
 - Clone the repository
 
-- Make wizzy executable
+- Run this command. This will run wizzy executable and also add the alias to your .bashrc
 
 ```bash
-  chmod +x wizzy
+  chmod +x wizzy ; echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc
 ```
 
 - Copy `wizzy` and `wizzy_config.yml`in your project folder
-
-- Add this alias to your `.bashrc` config file:
-
-```bash
-  echo 'alias wizzy="./wizzy "' >> ~/.bashrc && . ~/.bashrc
-```
 
 - Open your `wizzy_config.yml` file and tell him what are the files you want to be magic. Check out this example 
 
@@ -79,9 +73,12 @@ Yep. It's simple
 
 ### First Time
 
-- You should add all the wizzy files to the .gitignore
-  `wizzy ignore`
-    
+- You should add all the wizzy files to the .gitignore . Just run this command
+  
+```bash
+  echo -e 'wizzy \nwizzy_config.yml' >> .gitignore
+```
+
 - Install wizzy
   `wizzy install`
 
@@ -90,11 +87,26 @@ Yep. It's simple
 - Each time you need to restore files just type 
 `wizzy fix`
 
-- If you want to clean the cache just type
-`wizzy clean` and after a `wizzy install`
+- If you want to create the cache just type
+`wizzy install`
 
 - Do you want to track/untrack your restored files ?
 `wizzy track` or `wizzy untrack`
+
+- Do you want to track a new file ? You could modify the wizzy_config.yml .. or just type
+`wizzy add <file>`
+
+- Do you want to untrack a old file ? You could modify the wizzy_config.yml .. or just type
+`wizzy remove <file>`
+
+- Do you want to check if you screwed the configuration of wizzy? of if you added an phantom file?
+`wizzy check`
+
+- Of course what is better than a doctor when wizzy is sick?
+`wizzy doctor`
+
+- Do you want the list of all files wizzy tracks ?
+`wizzy list`
 
 - Don't remember a spell?
 `wizzy help`
