@@ -64,6 +64,8 @@ def check():
 			wizzySpeak("You have "+str(errors) +" error. Please run wizzy doctor to fix it")
 		else:
 			wizzySpeak("You have "+str(errors) +" errors. Please run wizzy doctor to fix them")
+	else:
+		wizzySpeak("Ok! It should be all ok ...")
 
 def doctor():
 	wizzySpeak("Checking files inside wizzy_config.yml")
