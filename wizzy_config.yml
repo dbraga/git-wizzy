@@ -1,4 +1,6 @@
 files: [config/*.yml, config/initializers/secret_token.rb]
 wizzy_cache_directory: .wizzy
 wizzy_directory: .
-wizzy_remote: false
+wizzy_remote: true
+wizzy_remote_repo: git@github.com:dbraga/.wizzy_remote.git
+wizzy_remote_folder_name: test

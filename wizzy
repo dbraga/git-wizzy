@@ -4,7 +4,7 @@ import yaml,sys,glob,os,shutil,errno,subprocess
 from random import choice
 from clint.textui import colored
 
-command_names = ['list', 'add', 'check','install','fix', 'doctor', 'remove','track','untrack','help']
+command_names = ['list', 'add', 'check','install','fix','rinstall','rfix', 'doctor', 'remove','track','untrack','help']
 
 def isACommand(command):
  return command in command_names
@@ -146,6 +146,25 @@ def install():
 			wizzySpeak(file,"Cached ")
 			shutil.copy2(file, os.path.abspath(configurationFile()['wizzy_cache_directory']))
 
+def rinstall():
+	if configurationFile()['wizzy_remote']:
+	 # local install
+		install()
+
+		wizzySpeak("Cloning remote directory")	
+		execute_process("git clone "+configurationFile()['wizzy_remote_repo'])
+		execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
+
+		execute_process("cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+"/")
+		execute_process( "cd .wizzy_remote/ ; "+ "git add "+configurationFile()['wizzy_remote_folder_name']+"/ ;"+ "git commit -m 'Adding .wizzy files' ;"+ "git push origin master" )
+		
+
+
+
+		wizzySpeak("All done!")
+	else:
+		wizzyCastAndSpeak("If you wish to use remote features you need to enable them in the wizzy_config.yml")
+
 def isModified(f):
 	if not os.path.exists(os.path.abspath(f)) :
 		# file removed?
@@ -171,6 +190,20 @@ def fix():
 					wizzySpeak(file,"Restored ")
 				else :
 					wizzySpeak(file,"No magic needed for file: ")
+
+def rfix():
+	if configurationFile()['wizzy_remote']:
+		# normal administration
+		execute_process("git clone "+configurationFile()['wizzy_remote_repo'])
+		execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
+
+		execute_process( "cd .wizzy_remote/ ; "+ "git pull origin master ; "+" cp -r * ../.wizzy/" )
+		# local fix
+		fix()
+		wizzySpeak("All done!")
+	else:
+		wizzyCastAndSpeak("If you wish to use remote features you need to enable them in the wizzy_config.yml")
+
 
 # ---------------------------------------------------
 
