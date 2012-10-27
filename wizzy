@@ -15,7 +15,8 @@ def configurationFile():
 		configuration_file = yaml.load(stream)
 		return configuration_file
 	except IOError:
-		print "File wizzy_config.yml not found!"
+		wizzyCastAndSpeakError("File wizzy_config.yml", "  not found! Please fix this!")
+		exit(0)
 
 def randomMagicWord():
 	words = [
