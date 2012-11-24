@@ -148,15 +148,28 @@ def install():
 
 def rinstall():
 	if configurationFile()['wizzy_remote']:
+
 	 # local install
 		install()
 
-		wizzySpeak("Cloning remote directory")	
-		execute_process("git clone "+configurationFile()['wizzy_remote_repo'])
-		execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
 
-		execute_process("cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+"/")
-		execute_process( "cd .wizzy_remote/ ; "+ "git add "+configurationFile()['wizzy_remote_folder_name']+"/ ;"+ "git commit -m 'Adding .wizzy files' ;"+ "git push origin master" )
+		if configurationFile()['wizzy_remote_repo']:
+			execute_process("git submodule add "+configurationFile()['wizzy_remote_repo']+" ; cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; rm -rf .wizzy/ ; ln -s .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" .wizzy")
+			# adding/sync new files to remote repo
+			execute_process( "cd .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; "+ "git add * ; git commit -m 'Adding .wizzy files' ;"+ "git push origin master" )
+		
+
+		# remote install
+		# if configurationFile()['wizzy_remote_repo']:
+			# execute_process("git submodule add "+configurationFile()['wizzy_remote_repo']+" ; ln -s .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" .wizzy")
+
+		# wizzySpeak("Cloning remote directory")	
+		# # clone repository
+		# execute_process("cd .wizzy/; ")
+		# execute_process("! git clone "+configurationFile()['wizzy_remote_repo'])
+		# execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
+		# execute_process("cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+"/")
+		# execute_process( "cd .wizzy_remote/ ; "+ "git add "+configurationFile()['wizzy_remote_folder_name']+"/ ;"+ "git commit -m 'Adding .wizzy files' ;"+ "git push origin master" )
 		
 
 
@@ -194,7 +207,7 @@ def fix():
 def rfix():
 	if configurationFile()['wizzy_remote']:
 		# normal administration
-		execute_process("git clone "+configurationFile()['wizzy_remote_repo'])
+		execute_process("! git clone "+configurationFile()['wizzy_remote_repo'])
 		execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
 
 		execute_process( "cd .wizzy_remote/ ; "+ "git pull origin master ; "+" cp -r * ../.wizzy/" )

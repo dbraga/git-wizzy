@@ -1,0 +1,3 @@
+[submodule ".wizzy_remote"]
+	path = .wizzy_remote
+	url = git@github.com:dbraga/.wizzy_remote.git
