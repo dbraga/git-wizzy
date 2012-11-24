@@ -4,7 +4,7 @@ import yaml,sys,glob,os,shutil,errno,subprocess
 from random import choice
 from clint.textui import colored
 
-command_names = ['list', 'add', 'check','install','fix', 'doctor', 'remove','track','untrack','help']
+command_names = ['list', 'add', 'check', 'install', 'fix', 'doctor', 'remove', 'track', 'untrack', 'help']
 
 def isACommand(command):
  return command in command_names
