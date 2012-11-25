@@ -146,24 +146,27 @@ def install():
 			wizzySpeak(file,"Cached ")
 			shutil.copy2(file, os.path.abspath(configurationFile()['wizzy_cache_directory']))
 
-def rinstall():
-	if configurationFile()['wizzy_remote']:
+def remotize(cache_dir):
+	# transform cache directory from normal directory to a symlink to .wizzy_remote dir
+	execute_process("rm -rf "+cache_dir+" ; ln -s .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" "+cache_dir)
 
-	 # local install
-		install()
-		if configurationFile()['wizzy_remote_repo']:
-			try:
-			   os.makedirs(configurationFile()['wizzy_remote_folder_name'])
-			except OSError, e:
-				if e.errno == errno.EEXIST:
-						wizzyCastAndSpeakError(configurationFile()['wizzy_remote_folder_name'], " directory was already created. Let's skip this ok?")
-				else:
-					execute_process("git submodule add "+configurationFile()['wizzy_remote_repo']+" ; cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; rm -rf .wizzy/ ; ln -s .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" .wizzy")
-					# adding/sync new files to remote repo
-				execute_process( "cd .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; "+ "! git add * ; ! git commit -m 'Sync .wizzy files' ;"+ "! git push origin master" )
-			wizzySpeak("All done!")
-		else:
-			wizzyCastAndSpeak("If you wish to use remote features you need to enable them in the wizzy_config.yml")
+def rinstall():
+	# Check if remote features are enabled
+	if not configurationFile()['wizzy_remote']:
+		wizzyCastAndSpeak("If you wish to use remote features you need to enable them in the wizzy_config.yml")
+		sys.exit()	
+ # local install
+	install()
+	# remote install
+	if not checkDirExistance(".wizzy_remote"):
+		cloneRepo(configurationFile()['wizzy_remote_repo'])
+		# we don't care about other folders
+		execute_process("cd .wizzy_remote; ls | grep -v "+configurationFile()['wizzy_remote_folder_name']+" | xargs rm -rf ")
+	# copy all the local files to the repo folder
+	execute_process("cp -r .wizzy/ .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; ")
+	remotize(configurationFile()['wizzy_cache_directory'])
+	execute_process( "cd .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; git add * ; git commit -m 'Sync .wizzy files' ; git push origin master" )
+
 
 def isModified(f):
 	if not os.path.exists(os.path.abspath(f)) :
@@ -191,19 +194,32 @@ def fix():
 				else :
 					wizzySpeak(file,"No magic needed for file: ")
 
+def checkDirExistance(directory):
+	if not os.path.exists(os.path.abspath(directory)) :
+		return False
+	else :
+		return True
+
+def cloneRepo(repo):
+	execute_process("git clone "+repo)
+
 def rfix():
-	if configurationFile()['wizzy_remote']:
-		# normal administration
-		execute_process("! git clone "+configurationFile()['wizzy_remote_repo'])
-		execute_process("mkdir .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name'])
-
-		execute_process( "cd .wizzy_remote/ ; "+ "git pull origin master ; "+" cp -r * ../.wizzy/" )
-		# local fix
-		fix()
-		wizzySpeak("All done!")
-	else:
+	# Check if remote features are enabled
+	if not configurationFile()['wizzy_remote']:
 		wizzyCastAndSpeak("If you wish to use remote features you need to enable them in the wizzy_config.yml")
-
+		sys.exit()	
+	# Check if the wizzy_cache_directory exists
+	if not checkDirExistance(configurationFile()['wizzy_cache_directory']):
+		wizzyCastAndSpeak(configurationFile()['wizzy_cache_directory']+ " directory is missing. You should execute a wizzy install first")
+		sys.exit()	
+	# Check if the remote directory exists
+	if not checkDirExistance(".wizzy_remote") :
+		execute_process("git clone "+configurationFile()['wizzy_remote_repo'])
+		execute_process("rm -rf "+configurationFile()['wizzy_cache_directory']+ " ; ln -s .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" .wizzy")
+	# Sync remote repo with local repo
+	wizzyCastAndSpeak("Sync spell")
+	execute_process("cd .wizzy_remote/"+configurationFile()['wizzy_remote_folder_name']+" ; "+ "git pull origin master ;")
+	fix()
 
 # ---------------------------------------------------
 
@@ -211,7 +227,7 @@ def rfix():
 # Git related operations
 
 def execute_process(command):
-	child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE)
+	child = subprocess.Popen(command, shell=True, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
 	while True:
 		out = child.stderr.read(1)
 		if out == '' and child.poll() != None:
